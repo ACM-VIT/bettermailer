@@ -13,10 +13,15 @@ export default function Home() {
                         <p className="text-sm font-semibold truncate">Sushant N.</p>
                         <p className="text-xs text-gray-500 truncate">sushant@example.com</p>
                     </div>
-                    <button className="size-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-200 shrink-0">
+                </div>
+
+                {/* Compose */}
+                <div className="px-3 py-2 border-b border-gray-200 shrink-0">
+                    <button className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium rounded-md px-4 py-2">
                         <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M3 8h10M8 3v10" />
                         </svg>
+                        Compose
                     </button>
                 </div>
 
@@ -97,9 +102,19 @@ export default function Home() {
                         <h1 className="text-base font-semibold">Inbox</h1>
                     </div>
                     <div className="flex items-center gap-2">
+                        <button className="size-7 flex items-center justify-center rounded-full white text-[10px] font-semibold border border-gray-200 hover:bg-gray-50 shrink-0">
+                            AI
+                        </button>
                         <button className="flex items-center gap-1.5 text-xs border border-gray-200 rounded-md px-2.5 py-1.5 hover:bg-gray-50">
                             <span className="size-3 rounded-full border border-gray-400" />
                             Auto label
+                        </button>
+                        <button className="flex items-center gap-1.5 text-xs border border-gray-200 rounded-md px-2.5 py-1.5 hover:bg-gray-50">
+                            <svg className="size-3.5 text-gray-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                <path d="M3 4h10M3 8h10M3 12h6" />
+                                <path d="M12 10v4M10 12h4" />
+                            </svg>
+                            Add tag
                         </button>
                         {(["M4 6h8M4 10h8", "M4 4h8v8H4z", "M8 4a4 4 0 100 8 4 4 0 000-8z"] as const).map((d, i) => (
                             <button
