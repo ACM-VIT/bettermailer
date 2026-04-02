@@ -90,16 +90,34 @@ export default function Home() {
                         </ul>
                     </section>
                 </nav>
+
+                {/* Bottom bar */}
+                <div className="flex justify-end px-3 py-2 border-t border-gray-200 shrink-0">
+                    <button className="size-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-200">
+                        <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <rect x="2" y="2" width="12" height="12" rx="2" />
+                            <path d="M6 6.5a2 2 0 1 1 2 2v1" strokeLinecap="round" />
+                            <circle cx="8" cy="11.5" r="0.5" fill="currentColor" stroke="none" />
+                        </svg>
+                    </button>
+                </div>
             </aside>
 
             {/* ── MAIN CONTENT ─────────────────────────────────────────── */}
             <main className="flex flex-col flex-1 min-w-0 relative">
 
                 {/* Header */}
-                <header className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
-                    <div className="flex items-center gap-2">
+                <header className="flex items-center gap-3 px-5 py-3 border-b border-gray-200 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                         <span className="size-5 rounded bg-gray-300" />
                         <h1 className="text-base font-semibold">Inbox</h1>
+                    </div>
+                    <div className="flex items-center bg-gray-100 border border-gray-200 rounded-md px-3 py-1.5 flex-1">
+                        <svg className="size-3.5 text-gray-400 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="6.5" cy="6.5" r="4.5" />
+                            <path d="M10 10l3 3" />
+                        </svg>
+                        <input type="text" placeholder="Search inbox..." className="flex-1 text-xs bg-transparent outline-none placeholder:text-gray-400" />
                     </div>
                     <div className="flex items-center gap-2">
                         <button className="size-7 flex items-center justify-center rounded-full white text-[10px] font-semibold border border-gray-200 hover:bg-gray-50 shrink-0">
