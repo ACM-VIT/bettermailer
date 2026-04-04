@@ -69,6 +69,8 @@ interface TemplateDefinition {
 
 const INITIAL_DRAFT = {
   to: "",
+  cc: "",
+  bcc: "",
   subject: "",
   body: "",
 };
@@ -122,6 +124,8 @@ export default function ComposeDock() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>([]);
   const [isCustomTagEditorOpen, setIsCustomTagEditorOpen] = useState(false);
+  const [isCcVisible, setIsCcVisible] = useState(false);
+  const [isBccVisible, setIsBccVisible] = useState(false);
   const [customTemplateForm, setCustomTemplateForm] = useState(
     INITIAL_CUSTOM_TEMPLATE_FORM,
   );
@@ -137,6 +141,8 @@ export default function ComposeDock() {
   const closeCompose = () => {
     setComposeState("closed");
     setIsCustomTagEditorOpen(false);
+    setIsCcVisible(false);
+    setIsBccVisible(false);
     setCustomTemplateError("");
   };
 
@@ -189,6 +195,8 @@ export default function ComposeDock() {
 
     setDraft({
       to: "",
+      cc: "",
+      bcc: "",
       subject: selectedTemplateDefinition?.subject ?? "",
       body: selectedTemplateDefinition?.body ?? "",
     });
@@ -528,30 +536,80 @@ export default function ComposeDock() {
             <form onSubmit={handleSubmit} className="gmail-compose-form">
               <div className="gmail-compose-fields">
                 <label className="gmail-compose-field">
-                  <span className="gmail-compose-field-label">To</span>
-                  <input
-                    ref={toInputRef}
-                    type="email"
-                    value={draft.to}
-                    onChange={(event) =>
-                      updateDraftField("to", event.target.value)
-                    }
-                    placeholder="recipient@example.com"
-                    className="gmail-compose-input"
-                  />
+                  <div className="gmail-compose-inline-field">
+                    <span className="gmail-compose-inline-label">To</span>
+                    <input
+                      ref={toInputRef}
+                      type="email"
+                      value={draft.to}
+                      onChange={(event) =>
+                        updateDraftField("to", event.target.value)
+                      }
+                      className="gmail-compose-inline-input"
+                    />
+                    <div className="gmail-compose-inline-actions">
+                      <button
+                        type="button"
+                        className={`gmail-compose-inline-toggle ${isCcVisible || draft.cc ? "gmail-compose-inline-toggle-active" : ""}`}
+                        onClick={() => setIsCcVisible((currentState) => !currentState)}
+                      >
+                        Cc
+                      </button>
+                      <button
+                        type="button"
+                        className={`gmail-compose-inline-toggle ${isBccVisible || draft.bcc ? "gmail-compose-inline-toggle-active" : ""}`}
+                        onClick={() => setIsBccVisible((currentState) => !currentState)}
+                      >
+                        Bcc
+                      </button>
+                    </div>
+                  </div>
                 </label>
 
+                {isCcVisible ? (
+                  <label className="gmail-compose-field">
+                    <div className="gmail-compose-inline-field">
+                      <span className="gmail-compose-inline-label">Cc</span>
+                      <input
+                        type="email"
+                        value={draft.cc}
+                        onChange={(event) =>
+                          updateDraftField("cc", event.target.value)
+                        }
+                        className="gmail-compose-inline-input"
+                      />
+                    </div>
+                  </label>
+                ) : null}
+
+                {isBccVisible ? (
+                  <label className="gmail-compose-field">
+                    <div className="gmail-compose-inline-field">
+                      <span className="gmail-compose-inline-label">Bcc</span>
+                      <input
+                        type="email"
+                        value={draft.bcc}
+                        onChange={(event) =>
+                          updateDraftField("bcc", event.target.value)
+                        }
+                        className="gmail-compose-inline-input"
+                      />
+                    </div>
+                  </label>
+                ) : null}
+
                 <label className="gmail-compose-field">
-                  <span className="gmail-compose-field-label">Subject</span>
-                  <input
-                    type="text"
-                    value={draft.subject}
-                    onChange={(event) =>
-                      updateDraftField("subject", event.target.value)
-                    }
-                    placeholder="Add a subject"
-                    className="gmail-compose-input"
-                  />
+                  <div className="gmail-compose-inline-field">
+                    <span className="gmail-compose-inline-label">Subject</span>
+                    <input
+                      type="text"
+                      value={draft.subject}
+                      onChange={(event) =>
+                        updateDraftField("subject", event.target.value)
+                      }
+                      className="gmail-compose-inline-input"
+                    />
+                  </div>
                 </label>
 
                 <label className="gmail-compose-editor">

@@ -357,12 +357,66 @@ body {
 }
 
 .gmail-compose-field {
-  padding: 0.75rem 0;
+  padding: 0.2rem 0;
   border-bottom: 1px solid var(--compose-divider);
 }
 
 .gmail-compose-editor {
   padding-top: 0.8rem;
+}
+
+.gmail-compose-inline-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.85rem;
+}
+
+.gmail-compose-inline-label {
+  flex: 0 0 auto;
+  min-width: 3rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.gmail-compose-inline-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.95rem;
+  color: var(--compose-text);
+}
+
+.gmail-compose-inline-input:focus {
+  outline: none;
+}
+
+.gmail-compose-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex: 0 0 auto;
+}
+
+.gmail-compose-inline-toggle {
+  border: 0;
+  background: transparent;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #475569;
+  transition: color 160ms ease;
+}
+
+.gmail-compose-inline-toggle:hover {
+  color: var(--compose-text);
+}
+
+.gmail-compose-inline-toggle-active {
+  color: #0b57d0;
 }
 
 .gmail-compose-field-label {
