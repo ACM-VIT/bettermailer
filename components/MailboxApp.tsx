@@ -19,6 +19,7 @@ import {
   type Email,
   type MailboxKey,
 } from "@/lib/mailData";
+import ComposeDock from "@/components/ComposeDock";
 
 function getInitials(name: string): string {
   return name
@@ -810,22 +811,9 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
             pointerEvents: sidebarVisible ? "auto" : "none",
           }}
         >
-          <button
-            style={{
-              margin: "10px 12px",
-              padding: "8px 12px",
-              background: "#1a1916",
-              color: "#faf9f7",
-              border: "none",
-              borderRadius: 8,
-              fontFamily: "var(--font-geist-mono), monospace",
-              fontSize: 11,
-              fontWeight: 500,
-              cursor: "pointer",
-            }}
-          >
-            Compose
-          </button>
+          <div style={{ margin: "10px 12px" }}>
+            <ComposeDock />
+          </div>
 
           <input
             type="text"
