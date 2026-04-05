@@ -1,8 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Link from "next/link";
+
+import {
+  DEFAULT_AUTHENTICATED_ROUTE,
+  setIsAuthenticated,
+} from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,7 +16,8 @@ export default function LoginPage() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push("/home");
+    setIsAuthenticated(true);
+    router.push(DEFAULT_AUTHENTICATED_ROUTE);
   };
 
   return (

@@ -1,4 +1,4 @@
-export type MailboxKey = "inbox" | "sent" | "all-mail" | "spam" | "trash";
+export type MailboxKey = "inbox" | "sent" | "all-mail" | "drafts" | "spam" | "trash";
 
 export interface AIInsight {
   summary: string;
@@ -86,6 +86,11 @@ export const MAILBOX_META: Record<
     label: "All Mail",
     description: "All received mail across your accounts",
     href: "/all-mail",
+  },
+  drafts: {
+    label: "Drafts",
+    description: "Unfinished emails saved for later editing and sending",
+    href: "/drafts",
   },
   spam: {
     label: "Spam",
@@ -395,6 +400,93 @@ export const SPAM_EMAILS: Email[] = [
   },
 ];
 
+export const DRAFT_EMAILS: Email[] = [
+  {
+    id: 151,
+    group: "Today",
+    sender: "Aman Sharma",
+    subject: "Follow-up on product demo",
+    snippet: "I wanted to share the revised talking points before tomorrow's discussion.",
+    time: "11:18 AM",
+    color: "#2563eb",
+    fromEmail: "sushant@example.com",
+    toName: "Aman Sharma",
+    toEmail: "aman.sharma@example.com",
+    body: `<p>Hi Aman,</p><p>I wanted to share the revised talking points before tomorrow's discussion.</p><p>Please let me know if there is anything specific you want me to cover during the demo.</p><p>Best,<br/>Sushant</p>`,
+    direction: "sent",
+    ai: {
+      summary:
+        "A saved draft for Aman about revised talking points ahead of tomorrow's demo.",
+      importance: 52,
+      dates: ["Last edited: Today, 11:18 AM"],
+      label: "Medium",
+    },
+  },
+  {
+    id: 152,
+    group: "Today",
+    sender: "Hiring Team",
+    subject: "Thank you after the interview",
+    snippet: "Thank you for the thoughtful conversation today. I enjoyed learning more about the role and team.",
+    time: "9:42 AM",
+    color: "#7c3aed",
+    fromEmail: "sushant@example.com",
+    toName: "Hiring Team",
+    toEmail: "hiring@company.io",
+    body: `<p>Hello team,</p><p>Thank you for the thoughtful conversation today. I enjoyed learning more about the role and team.</p><p>I appreciate your time and look forward to hearing about the next steps.</p><p>Regards,<br/>Sushant</p>`,
+    direction: "sent",
+    ai: {
+      summary:
+        "A thank-you email draft after an interview is saved and ready for final review.",
+      importance: 61,
+      dates: ["Ready to send: Today"],
+      label: "Medium",
+    },
+  },
+  {
+    id: 153,
+    group: "This Week",
+    sender: "Design Review Group",
+    subject: "Meeting notes and next steps",
+    snippet: "Sharing the summary of our discussion along with the proposed timeline for the next milestone.",
+    time: "Thursday",
+    color: "#0f766e",
+    fromEmail: "sushant.n@company.io",
+    toName: "Design Review Group",
+    toEmail: "design-review@company.io",
+    body: `<p>Hello everyone,</p><p>Sharing the summary of our discussion along with the proposed timeline for the next milestone.</p><p>I still need to add the final attachment before sending this out.</p><p>Thanks,<br/>Sushant</p>`,
+    direction: "sent",
+    ai: {
+      summary:
+        "A draft recap email for the design review group still needs one attachment before sending.",
+      importance: 47,
+      dates: ["Edited: Thursday"],
+      label: "Medium",
+    },
+  },
+  {
+    id: 154,
+    group: "This Week",
+    sender: "HR Department",
+    subject: "Leave request clarification",
+    snippet: "I am writing to clarify the dates mentioned in my earlier leave application.",
+    time: "Tuesday",
+    color: "#ea580c",
+    fromEmail: "sushant@example.com",
+    toName: "HR Department",
+    toEmail: "hr@example.com",
+    body: `<p>Hello,</p><p>I am writing to clarify the dates mentioned in my earlier leave application.</p><p>I want to confirm the final wording before I send this message.</p><p>Regards,<br/>Sushant</p>`,
+    direction: "sent",
+    ai: {
+      summary:
+        "A leave clarification draft is saved and waiting for final wording.",
+      importance: 44,
+      dates: ["Edited: Tuesday"],
+      label: "Medium",
+    },
+  },
+];
+
 export const TRASH_EMAILS: Email[] = [
   {
     id: 301,
@@ -461,6 +553,7 @@ export const TRASH_EMAILS: Email[] = [
 export function getMailboxEmails(mailbox: MailboxKey): Email[] {
   if (mailbox === "sent") return SENT_EMAILS;
   if (mailbox === "all-mail") return ALL_MAIL_EMAILS;
+  if (mailbox === "drafts") return DRAFT_EMAILS;
   if (mailbox === "spam") return SPAM_EMAILS;
   if (mailbox === "trash") return TRASH_EMAILS;
   return INBOX_EMAILS;

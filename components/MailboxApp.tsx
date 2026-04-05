@@ -108,14 +108,6 @@ interface TooltipState {
   y: number;
 }
 
-const EXTRA_MAIL_LINKS = [
-  {
-    key: "drafts",
-    label: "Drafts",
-    href: "/drafts",
-  },
-] as const;
-
 function AITooltip({ state }: { state: TooltipState | null }) {
   if (!state) return null;
 
@@ -881,37 +873,6 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
                 </Link>
               )
             )}
-            {EXTRA_MAIL_LINKS.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                  padding: "6px 8px",
-                  borderRadius: 6,
-                  fontSize: 11,
-                  color: "#6b6860",
-                  fontWeight: 400,
-                  background: "transparent",
-                  border: "1px solid transparent",
-                  whiteSpace: "nowrap",
-                  textDecoration: "none",
-                }}
-              >
-                <span
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: 3,
-                    background: "#e4e2dc",
-                    flexShrink: 0,
-                  }}
-                />
-                {item.label}
-              </Link>
-            ))}
           </nav>
         </aside>
 
