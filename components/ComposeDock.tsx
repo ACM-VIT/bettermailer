@@ -1,6 +1,13 @@
-'use client';
+"use client";
 
-import { FormEvent, startTransition, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  startTransition,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 
 const CUSTOM_TEMPLATE_STORAGE_KEY = "bettermailer.custom-templates";
 
@@ -121,6 +128,7 @@ function getTemplateDefinition(
 
 export default function ComposeDock() {
   const [composeState, setComposeState] = useState<ComposeState>("closed");
+  const [composeSize, setComposeSize] = useState({ width: 480, height: 620 });
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [customTemplates, setCustomTemplates] = useState<CustomTemplate[]>([]);
   const [isCustomTagEditorOpen, setIsCustomTagEditorOpen] = useState(false);
@@ -133,6 +141,23 @@ export default function ComposeDock() {
   const [draft, setDraft] = useState(INITIAL_DRAFT);
   const toInputRef = useRef<HTMLInputElement>(null);
   const hasLoadedCustomTemplatesRef = useRef(false);
+  const resizeStateRef = useRef<{
+    startX: number;
+    startY: number;
+    startWidth: number;
+    startHeight: number;
+  } | null>(null);
+
+  const clampComposeSize = (width: number, height: number) => {
+    if (typeof window === "undefined") {
+      return { width, height };
+    }
+
+    return {
+      width: Math.min(Math.max(width, 360), window.innerWidth - 40),
+      height: Math.min(Math.max(height, 420), window.innerHeight - 40),
+    };
+  };
 
   const openCompose = () => {
     setComposeState("open");
@@ -327,6 +352,68 @@ export default function ComposeDock() {
     };
   }, [composeState]);
 
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!resizeStateRef.current) {
+        return;
+      }
+
+      const nextWidth =
+        resizeStateRef.current.startWidth -
+        (event.clientX - resizeStateRef.current.startX);
+      const nextHeight =
+        resizeStateRef.current.startHeight -
+        (event.clientY - resizeStateRef.current.startY);
+
+      setComposeSize(clampComposeSize(nextWidth, nextHeight));
+    };
+
+    const stopResizing = () => {
+      resizeStateRef.current = null;
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", stopResizing);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", stopResizing);
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncComposeSize = () => {
+      setComposeSize((currentSize) =>
+        clampComposeSize(currentSize.width, currentSize.height),
+      );
+    };
+
+    syncComposeSize();
+    window.addEventListener("resize", syncComposeSize);
+
+    return () => {
+      window.removeEventListener("resize", syncComposeSize);
+    };
+  }, []);
+
+  const startResizing = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (composeState !== "open") {
+      return;
+    }
+
+    resizeStateRef.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: composeSize.width,
+      startHeight: composeSize.height,
+    };
+
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "nwse-resize";
+  };
+
   const templateButtons = [
     ...Object.entries(BUILT_IN_TEMPLATES).map(([key, template]) => ({
       key: `built-in:${key}`,
@@ -366,12 +453,22 @@ export default function ComposeDock() {
         className="gmail-compose-shell"
         data-state={composeState}
         aria-hidden={composeState === "closed"}
+        style={
+          composeState === "open"
+            ? { width: composeSize.width }
+            : undefined
+        }
       >
         <div
           className="gmail-compose-window"
           role="dialog"
           aria-modal="false"
           aria-labelledby="compose-title"
+          style={
+            composeState === "open"
+              ? { height: composeSize.height, maxHeight: composeSize.height }
+              : undefined
+          }
         >
           <header className="gmail-compose-header">
             <div className="gmail-compose-heading">
@@ -432,6 +529,14 @@ export default function ComposeDock() {
               </button>
             </div>
           </header>
+
+          <button
+            type="button"
+            className="gmail-compose-resize-handle"
+            onPointerDown={startResizing}
+            aria-label="Resize compose window"
+            title="Drag to resize"
+          />
 
           <div
             className="gmail-compose-content"

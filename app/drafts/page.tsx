@@ -4,21 +4,13 @@ import Link from "next/link";
 
 import ComposeDock from "../../components/ComposeDock";
 
-const VIEWS = [
-  { label: "Inbox", badge: "99+", href: "/home", active: false },
-  { label: "GitHub", badge: "21", href: "#", active: false },
-  { label: "Calendar", badge: null, href: "#", active: false },
-  { label: "Labels", badge: "4", href: "#", active: false },
-  { label: "Promotions", badge: "12", href: "#", active: false },
-  { label: "Social", badge: "3", href: "#", active: false },
-];
-
 const MAIL_FOLDERS = [
-  { label: "All Mail", href: "#" },
-  { label: "Sent", href: "#" },
+  { label: "Inbox", href: "/home" },
+  { label: "All Mail", href: "/all-mail" },
+  { label: "Sent", href: "/sent" },
   { label: "Drafts", href: "/drafts", active: true },
-  { label: "Spam", href: "#" },
-  { label: "Trash", href: "#" },
+  { label: "Spam", href: "/spam" },
+  { label: "Trash", href: "/trash" },
 ];
 
 const FILTER_CHIPS = [
@@ -157,47 +149,6 @@ export default function DraftsPage() {
         <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-4">
           <section>
             <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-              Views
-            </p>
-            <ul className="space-y-0.5">
-              {VIEWS.map(({ label, badge, href, active }) => {
-                const className = `flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm ${
-                  active
-                    ? "bg-gray-200 font-medium text-gray-900"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`;
-
-                return (
-                  <li key={label}>
-                    {href === "#" ? (
-                      <button className={className}>
-                        <span className="size-4 shrink-0 rounded bg-gray-300" />
-                        <span className="flex-1 truncate text-left">{label}</span>
-                        {badge ? (
-                          <span className="shrink-0 rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] font-medium leading-none text-gray-500">
-                            {badge}
-                          </span>
-                        ) : null}
-                      </button>
-                    ) : (
-                      <Link href={href} className={className}>
-                        <span className="size-4 shrink-0 rounded bg-gray-300" />
-                        <span className="flex-1 truncate text-left">{label}</span>
-                        {badge ? (
-                          <span className="shrink-0 rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] font-medium leading-none text-gray-500">
-                            {badge}
-                          </span>
-                        ) : null}
-                      </Link>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-
-          <section>
-            <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
               Mail
             </p>
             <ul className="space-y-0.5">
@@ -210,17 +161,10 @@ export default function DraftsPage() {
 
                 return (
                   <li key={label}>
-                    {href === "#" ? (
-                      <button className={className}>
-                        <span className="size-4 shrink-0 rounded bg-gray-300" />
-                        <span className="flex-1 truncate text-left">{label}</span>
-                      </button>
-                    ) : (
-                      <Link href={href} className={className}>
-                        <span className="size-4 shrink-0 rounded bg-gray-300" />
-                        <span className="flex-1 truncate text-left">{label}</span>
-                      </Link>
-                    )}
+                    <Link href={href} className={className}>
+                      <span className="size-4 shrink-0 rounded bg-gray-300" />
+                      <span className="flex-1 truncate text-left">{label}</span>
+                    </Link>
                   </li>
                 );
               })}

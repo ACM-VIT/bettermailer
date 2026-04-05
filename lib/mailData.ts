@@ -1,4 +1,4 @@
-export type MailboxKey = "inbox" | "sent" | "all-mail";
+export type MailboxKey = "inbox" | "sent" | "all-mail" | "spam" | "trash";
 
 export interface AIInsight {
   summary: string;
@@ -86,6 +86,16 @@ export const MAILBOX_META: Record<
     label: "All Mail",
     description: "All received mail across your accounts",
     href: "/all-mail",
+  },
+  spam: {
+    label: "Spam",
+    description: "Suspicious and filtered messages kept out of your inbox",
+    href: "/spam",
+  },
+  trash: {
+    label: "Trash",
+    description: "Recently deleted mail before permanent removal",
+    href: "/trash",
   },
 };
 
@@ -322,8 +332,136 @@ export const SENT_EMAILS: Email[] = [
   },
 ];
 
+export const SPAM_EMAILS: Email[] = [
+  {
+    id: 201,
+    group: "Today",
+    sender: "Crypto Growth Lab",
+    subject: "Earn Rs.50,000 daily from home",
+    snippet: "Limited-time passive income blueprint unlocked for your account.",
+    time: "1:14 PM",
+    color: "#7c2d12",
+    fromEmail: "alerts@cryptogrowth-lab.biz",
+    receivedBy: "sushant@example.com",
+    body: `<p>Hello Winner,</p><p>Your account has been shortlisted for a guaranteed earnings program. Deposit once today to unlock daily returns.</p><p>Reply immediately to reserve your slot.</p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "A suspicious get-rich-quick message promising guaranteed returns was filtered as spam.",
+      importance: 81,
+      dates: ["Filtered: Today, 1:14 PM"],
+      label: "High",
+    },
+  },
+  {
+    id: 202,
+    group: "Yesterday",
+    sender: "Microsoft Security Team",
+    subject: "Urgent password expiration notice",
+    snippet: "Your mailbox will be suspended unless you verify within 30 minutes.",
+    time: "Yesterday",
+    color: "#374151",
+    fromEmail: "security-check@micr0soft-support.net",
+    receivedBy: "sushant.n@company.io",
+    body: `<p>Dear User,</p><p>Your company mailbox is about to expire. Verify your password within 30 minutes to avoid data loss.</p><p><a href="#">Click here to keep access</a></p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "A phishing-style account warning using a spoofed sender domain was moved to spam.",
+      importance: 94,
+      dates: ["Flagged: Yesterday"],
+      label: "High",
+    },
+  },
+  {
+    id: 203,
+    group: "Earlier",
+    sender: "Lucky Draw Center",
+    subject: "Congratulations, you won a new iPhone",
+    snippet: "Pay the courier fee today to claim your device.",
+    time: "Mar 27",
+    color: "#9333ea",
+    fromEmail: "claim@lucky-draw-center.cc",
+    receivedBy: "s.nair.personal@gmail.com",
+    body: `<p>Congratulations!</p><p>Your email was selected in our monthly draw. Send the handling charge today to receive your prize.</p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "A prize scam asking for a handling fee was classified as spam.",
+      importance: 88,
+      dates: ["Received: March 27, 2026"],
+      label: "High",
+    },
+  },
+];
+
+export const TRASH_EMAILS: Email[] = [
+  {
+    id: 301,
+    group: "Today",
+    sender: "Dev Community",
+    subject: "April meetup reminder",
+    snippet: "Final reminder for tonight's local frontend meetup.",
+    time: "12:06 PM",
+    color: "#2563eb",
+    fromEmail: "events@devcommunity.io",
+    receivedBy: "sushant@example.com",
+    body: `<p>Hi Sushant,</p><p>This is a reminder that the local frontend meetup starts tonight at 7:00 PM. You deleted this message earlier.</p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "A meetup reminder you deleted is currently sitting in trash.",
+      importance: 18,
+      dates: ["Deleted: Today, 12:06 PM"],
+      label: "Low",
+    },
+  },
+  {
+    id: 302,
+    group: "Yesterday",
+    sender: "Swiggy",
+    subject: "Your receipt from last order",
+    snippet: "Receipt for your order from Burger Yard is attached.",
+    time: "Yesterday",
+    color: "#ea580c",
+    fromEmail: "receipts@swiggy.in",
+    receivedBy: "s.nair.personal@gmail.com",
+    body: `<p>Hello,</p><p>Your receipt for order #7841 from Burger Yard is attached for reference.</p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "A food order receipt was deleted and moved to trash.",
+      importance: 12,
+      dates: ["Deleted: Yesterday"],
+      label: "Low",
+    },
+  },
+  {
+    id: 303,
+    group: "Earlier",
+    sender: "Old Recruiter Thread",
+    subject: "Checking back on your application",
+    snippet: "Following up in case you are still exploring roles this quarter.",
+    time: "Mar 25",
+    color: "#0f766e",
+    fromEmail: "talent@hireloop.io",
+    receivedBy: "sushant@example.com",
+    body: `<p>Hi Sushant,</p><p>Just checking whether you are still exploring engineering roles this quarter.</p><p>Happy to reconnect if timing is better now.</p>`,
+    direction: "received",
+    ai: {
+      summary:
+        "An older recruiter follow-up thread was deleted and remains in trash.",
+      importance: 24,
+      dates: ["Deleted: March 25, 2026"],
+      label: "Low",
+    },
+  },
+];
+
 export function getMailboxEmails(mailbox: MailboxKey): Email[] {
   if (mailbox === "sent") return SENT_EMAILS;
   if (mailbox === "all-mail") return ALL_MAIL_EMAILS;
+  if (mailbox === "spam") return SPAM_EMAILS;
+  if (mailbox === "trash") return TRASH_EMAILS;
   return INBOX_EMAILS;
 }
