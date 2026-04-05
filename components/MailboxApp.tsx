@@ -235,10 +235,12 @@ function AITooltip({ state }: { state: TooltipState | null }) {
 
 function AccountDropdown({
   activeId,
+  isOpen,
   onSwitch,
   onClose,
 }: {
   activeId: number;
+  isOpen: boolean;
   onSwitch: (id: number) => void;
   onClose: () => void;
 }) {
@@ -256,6 +258,10 @@ function AccountDropdown({
         zIndex: 200,
         overflow: "hidden",
         fontFamily: "var(--font-geist-mono), monospace",
+        opacity: isOpen ? 1 : 0,
+        transform: isOpen ? "translateY(0)" : "translateY(-8px)",
+        pointerEvents: isOpen ? "auto" : "none",
+        transition: "opacity 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.25s cubic-bezier(0.4,0,0.2,1)",
       }}
     >
       <div
@@ -784,16 +790,15 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
           ||
         </button>
 
-        {dropdownOpen && (
-          <AccountDropdown
-            activeId={activeAccountId}
-            onSwitch={(id) => {
-              setActiveAccountId(id);
-              setDropdownOpen(false);
-            }}
-            onClose={() => setDropdownOpen(false)}
-          />
-        )}
+        <AccountDropdown
+          activeId={activeAccountId}
+          isOpen={dropdownOpen}
+          onSwitch={(id) => {
+            setActiveAccountId(id);
+            setDropdownOpen(false);
+          }}
+          onClose={() => setDropdownOpen(false)}
+        />
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -806,7 +811,7 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            transition: sidebarVisible ? "none" : "width 0.25s cubic-bezier(0.4,0,0.2,1)",
+            transition: "width 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s cubic-bezier(0.4,0,0.2,1)",
             opacity: sidebarVisible ? 1 : 0,
             pointerEvents: sidebarVisible ? "auto" : "none",
           }}
