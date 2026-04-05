@@ -14,7 +14,6 @@ import {
   ACCOUNTS,
   FILTER_CHIPS,
   MAILBOX_META,
-  VIEWS,
   getMailboxEmails,
   type Email,
   type MailboxKey,
@@ -108,6 +107,14 @@ interface TooltipState {
   x: number;
   y: number;
 }
+
+const EXTRA_MAIL_LINKS = [
+  {
+    key: "drafts",
+    label: "Drafts",
+    href: "/drafts",
+  },
+] as const;
 
 function AITooltip({ state }: { state: TooltipState | null }) {
   if (!state) return null;
@@ -835,54 +842,6 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
           />
 
           <nav style={{ flex: 1, overflowY: "auto", padding: "4px 8px" }}>
-            <div style={sectionTitleStyle}>Views</div>
-            {VIEWS.map(({ label, badge }) => {
-              const isActive = label === "Inbox" && mailbox === "inbox";
-              return (
-                <div
-                  key={label}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 7,
-                    padding: "6px 8px",
-                    borderRadius: 6,
-                    fontSize: 11,
-                    color: isActive ? "#1a1916" : "#6b6860",
-                    fontWeight: isActive ? 600 : 400,
-                    background: isActive ? "#faf9f7" : "transparent",
-                    border: isActive ? "1px solid #e4e2dc" : "1px solid transparent",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: 3,
-                      background: "#e4e2dc",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span style={{ flex: 1 }}>{label}</span>
-                  {badge && (
-                    <span
-                      style={{
-                        fontSize: 9,
-                        fontWeight: 600,
-                        color: "#a09e99",
-                        background: "#e8e4dc",
-                        borderRadius: 10,
-                        padding: "1px 5px",
-                      }}
-                    >
-                      {badge}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-
             <div style={sectionTitleStyle}>Mail</div>
             {(Object.entries(MAILBOX_META) as Array<[MailboxKey, (typeof MAILBOX_META)[MailboxKey]]>).map(
               ([key, item]) => (
@@ -917,6 +876,37 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
                 </Link>
               )
             )}
+            {EXTRA_MAIL_LINKS.map((item) => (
+              <Link
+                key={item.key}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "6px 8px",
+                  borderRadius: 6,
+                  fontSize: 11,
+                  color: "#6b6860",
+                  fontWeight: 400,
+                  background: "transparent",
+                  border: "1px solid transparent",
+                  whiteSpace: "nowrap",
+                  textDecoration: "none",
+                }}
+              >
+                <span
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 3,
+                    background: "#e4e2dc",
+                    flexShrink: 0,
+                  }}
+                />
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </aside>
 
