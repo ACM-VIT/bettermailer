@@ -10,10 +10,6 @@ import {
 } from "react";
 import ComposeDock from "@/components/ComposeDock";
 import {
-  getAuthenticatedUserEmail,
-  setIsAuthenticated,
-} from "@/lib/auth";
-import {
   MAILBOX_META,
   type Email,
   type MailboxKey,
@@ -249,7 +245,13 @@ function EmptyMailbox({
   );
 }
 
-export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
+export default function MailboxApp({
+  mailbox,
+  userEmail,
+}: {
+  mailbox: MailboxKey;
+  userEmail: string;
+}) {
   const router = useRouter();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -258,14 +260,8 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [userEmail, setUserEmail] = useState("");
 
   const mailboxMeta = MAILBOX_META[mailbox];
-
-  useEffect(() => {
-    const email = getAuthenticatedUserEmail();
-    setUserEmail(email);
-  }, []);
 
   useEffect(() => {
     if (!userEmail) {
@@ -365,8 +361,7 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
   }, [activeEmailId, filteredEmails]);
 
   function handleSignOut() {
-    setIsAuthenticated(false);
-    router.replace("/login");
+    router.push("/logout");
   }
 
   return (
@@ -450,7 +445,7 @@ export default function MailboxApp({ mailbox }: { mailbox: MailboxKey }) {
           }}
         >
           <div style={{ margin: "10px 12px" }}>
-            <ComposeDock />
+            <ComposeDock userEmail={userEmail} />
           </div>
 
           <input

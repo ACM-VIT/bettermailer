@@ -8,7 +8,6 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { getAuthenticatedUserEmail } from "@/lib/auth";
 
 const CUSTOM_TEMPLATE_STORAGE_KEY = "bettermailer.custom-templates";
 
@@ -127,7 +126,7 @@ function getTemplateDefinition(
   return null;
 }
 
-export default function ComposeDock() {
+export default function ComposeDock({ userEmail }: { userEmail: string }) {
   const [composeState, setComposeState] = useState<ComposeState>("closed");
   const [composeSize, setComposeSize] = useState({ width: 480, height: 620 });
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -312,9 +311,7 @@ export default function ComposeDock() {
     setSendError("");
 
     try {
-      const from = getAuthenticatedUserEmail();
-
-      if (!from) {
+      if (!userEmail) {
         setSendError("Please log in before sending email.");
         return;
       }
@@ -325,7 +322,7 @@ export default function ComposeDock() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from,
+          from: userEmail,
           to: draft.to,
           subject: draft.subject,
           message: draft.body,

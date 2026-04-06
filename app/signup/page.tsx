@@ -98,7 +98,6 @@ export default function SignupPage() {
             className="mt-6 w-full rounded-lg bg-black py-3 text-sm font-medium text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {pending ? "Creating account..." : "Create account"}
-            {pending ? "Creating account..." : "Create account"}
           </button>
         </form>
 

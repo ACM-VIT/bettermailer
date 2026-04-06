@@ -40,3 +40,5 @@ function createDb() {
 export function getDb() {
   return createDb();
 }
+
+export const db = getDb();
