@@ -43,11 +43,16 @@ export default function LoginPage() {
             <input
               type="password"
               name="password"
+              name="password"
               placeholder="Enter your password"
               className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
           </div>
+
+          {state.error ? (
+            <p className="text-sm text-red-600">{state.error}</p>
+          ) : null}
 
           {state.error ? (
             <p className="text-sm text-red-600">{state.error}</p>

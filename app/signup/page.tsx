@@ -88,11 +88,16 @@ export default function SignupPage() {
             <p className="text-sm text-red-600">{state.error}</p>
           ) : null}
 
+          {state.error ? (
+            <p className="text-sm text-red-600">{state.error}</p>
+          ) : null}
+
           <button
             type="submit"
             disabled={pending}
             className="mt-6 w-full rounded-lg bg-black py-3 text-sm font-medium text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-70"
           >
+            {pending ? "Creating account..." : "Create account"}
             {pending ? "Creating account..." : "Create account"}
           </button>
         </form>
