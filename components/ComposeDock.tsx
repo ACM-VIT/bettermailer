@@ -2,14 +2,11 @@
 
 import {
   FormEvent,
-  startTransition,
   useEffect,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-
-const CUSTOM_TEMPLATE_STORAGE_KEY = "bettermailer.custom-templates";
 
 const BUILT_IN_TEMPLATES = {
   apology: {
@@ -142,7 +139,6 @@ export default function ComposeDock({ userEmail }: { userEmail: string }) {
   const [sendError, setSendError] = useState("");
   const [isSending, setIsSending] = useState(false);
   const toInputRef = useRef<HTMLInputElement>(null);
-  const hasLoadedCustomTemplatesRef = useRef(false);
   const resizeStateRef = useRef<{
     startX: number;
     startY: number;
@@ -259,7 +255,7 @@ export default function ComposeDock({ userEmail }: { userEmail: string }) {
     setCustomTemplateError("");
   };
 
-  const saveCustomTemplate = () => {
+  const saveCustomTemplate = async () => {
     const trimmedLabel = customTemplateForm.label.trim();
     const trimmedPrompt = customTemplateForm.prompt.trim();
 
@@ -277,24 +273,48 @@ export default function ComposeDock({ userEmail }: { userEmail: string }) {
       return;
     }
 
-    const newCustomTemplate: CustomTemplate = {
-      id: `${Date.now()}`,
-      label: trimmedLabel,
-      prompt: trimmedPrompt,
-    };
+    try {
+      const response = await fetch("/api/custom-templates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          label: trimmedLabel,
+          prompt: trimmedPrompt,
+        }),
+      });
 
-    const nextCustomTemplates = [...customTemplates, newCustomTemplate];
+      const result = (await response.json()) as {
+        error?: string;
+        template?: CustomTemplate;
+      };
 
-    setCustomTemplates(nextCustomTemplates);
-    setCustomTemplateForm(INITIAL_CUSTOM_TEMPLATE_FORM);
-    setCustomTemplateError("");
-    setIsCustomTagEditorOpen(false);
-    setSelectedTemplate(`custom:${newCustomTemplate.id}`);
-    setDraft((currentDraft) => ({
-      ...currentDraft,
-      subject: newCustomTemplate.label,
-      body: buildCustomTemplateDefinition(newCustomTemplate).body,
-    }));
+      if (!response.ok || !result.template) {
+        setCustomTemplateError(
+          result.error ?? "Unable to save that tag right now.",
+        );
+        return;
+      }
+
+      const newCustomTemplate = result.template;
+
+      setCustomTemplates((currentTemplates) => [
+        ...currentTemplates,
+        newCustomTemplate,
+      ]);
+      setCustomTemplateForm(INITIAL_CUSTOM_TEMPLATE_FORM);
+      setCustomTemplateError("");
+      setIsCustomTagEditorOpen(false);
+      setSelectedTemplate(`custom:${newCustomTemplate.id}`);
+      setDraft((currentDraft) => ({
+        ...currentDraft,
+        subject: newCustomTemplate.label,
+        body: buildCustomTemplateDefinition(newCustomTemplate).body,
+      }));
+    } catch {
+      setCustomTemplateError("Unable to save that tag right now.");
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -347,48 +367,38 @@ export default function ComposeDock({ userEmail }: { userEmail: string }) {
   };
 
   useEffect(() => {
-    const storedCustomTemplates = window.localStorage.getItem(
-      CUSTOM_TEMPLATE_STORAGE_KEY,
-    );
+    let isActive = true;
 
-    if (!storedCustomTemplates) {
-      hasLoadedCustomTemplatesRef.current = true;
-      return;
-    }
-
-    try {
-      const parsedTemplates = JSON.parse(storedCustomTemplates);
-
-      if (Array.isArray(parsedTemplates)) {
-        const validTemplates = parsedTemplates.filter((template) => {
-          return (
-            typeof template?.id === "string" &&
-            typeof template?.label === "string" &&
-            typeof template?.prompt === "string"
-          );
-        }) as CustomTemplate[];
-
-        startTransition(() => {
-          setCustomTemplates(validTemplates);
+    const loadCustomTemplates = async () => {
+      try {
+        const response = await fetch("/api/custom-templates", {
+          method: "GET",
+          cache: "no-store",
         });
+
+        const result = (await response.json()) as {
+          error?: string;
+          templates?: CustomTemplate[];
+        };
+
+        if (!response.ok) {
+          return;
+        }
+
+        if (isActive && Array.isArray(result.templates)) {
+          setCustomTemplates(result.templates);
+        }
+      } catch {
+        return;
       }
-    } catch {
-      window.localStorage.removeItem(CUSTOM_TEMPLATE_STORAGE_KEY);
-    }
+    };
 
-    hasLoadedCustomTemplatesRef.current = true;
+    void loadCustomTemplates();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
-
-  useEffect(() => {
-    if (!hasLoadedCustomTemplatesRef.current) {
-      return;
-    }
-
-    window.localStorage.setItem(
-      CUSTOM_TEMPLATE_STORAGE_KEY,
-      JSON.stringify(customTemplates),
-    );
-  }, [customTemplates]);
 
   useEffect(() => {
     if (composeState !== "open") {
