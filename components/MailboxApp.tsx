@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
 } from "react";
@@ -254,12 +255,14 @@ export default function MailboxApp({
 }) {
   const router = useRouter();
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeEmailId, setActiveEmailId] = useState<string | null>(null);
   const [readerOpen, setReaderOpen] = useState(false);
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const mailboxMeta = MAILBOX_META[mailbox];
 
@@ -364,6 +367,24 @@ export default function MailboxApp({
     router.push("/logout");
   }
 
+  useEffect(() => {
+    if (!isProfileMenuOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!profileMenuRef.current?.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isProfileMenuOpen]);
+
   return (
     <div
       style={{
@@ -389,31 +410,39 @@ export default function MailboxApp({
           flexShrink: 0,
         }}
       >
-        <div
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: "50%",
-            background: "#1d4ed8",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 11,
-            fontWeight: 600,
-            color: "white",
-            flexShrink: 0,
-          }}
-        >
-          {getInitials(userEmail || "U")}
-        </div>
-
-        <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ minWidth: 0, flex: "0 0 auto" }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: "#1a1916" }}>
-            {userEmail || "Logged out"}
+            BetterMailer
           </div>
           <div style={{ fontSize: 10, color: "#a09e99" }}>
             Single account mode
           </div>
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            minWidth: 180,
+            position: "relative",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search mail..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            style={{
+              width: "100%",
+              padding: "8px 12px",
+              background: "#f5f2ec",
+              border: "1px solid #e4e2dc",
+              borderRadius: 999,
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: 11,
+              color: "#1a1916",
+              outline: "none",
+            }}
+          />
         </div>
 
         <button
@@ -423,9 +452,113 @@ export default function MailboxApp({
         >
           ||
         </button>
-        <button onClick={handleSignOut} style={buttonStyle} title="Sign out">
-          O
-        </button>
+        <div
+          ref={profileMenuRef}
+          style={{ position: "relative", flexShrink: 0 }}
+        >
+          <button
+            onClick={() => setIsProfileMenuOpen((value) => !value)}
+            title="Profile"
+            style={{
+              ...buttonStyle,
+              width: 34,
+              height: 34,
+              borderRadius: 17,
+              background: "#1d4ed8",
+              border: "1px solid #1d4ed8",
+              color: "white",
+              fontWeight: 700,
+            }}
+          >
+            {getInitials(userEmail || "U")}
+          </button>
+
+          {isProfileMenuOpen ? (
+            <div
+              style={{
+                position: "absolute",
+                top: 42,
+                right: 0,
+                width: 260,
+                background: "#fffdf9",
+                border: "1px solid #e4e2dc",
+                borderRadius: 12,
+                boxShadow: "0 18px 40px rgba(26, 25, 22, 0.12)",
+                padding: 14,
+                zIndex: 20,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  paddingBottom: 12,
+                  borderBottom: "1px solid #ede9e2",
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    background: "#1d4ed8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "white",
+                    flexShrink: 0,
+                  }}
+                >
+                  {getInitials(userEmail || "U")}
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: "#1a1916",
+                    }}
+                  >
+                    Logged in profile
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 3,
+                      fontSize: 10,
+                      lineHeight: 1.5,
+                      color: "#8a867d",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {userEmail || "Logged out"}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSignOut}
+                style={{
+                  width: "100%",
+                  marginTop: 12,
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #f3c2c2",
+                  background: "#fff1f1",
+                  color: "#c62828",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-mono), monospace",
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -447,25 +580,6 @@ export default function MailboxApp({
           <div style={{ margin: "10px 12px" }}>
             <ComposeDock userEmail={userEmail} />
           </div>
-
-          <input
-            type="text"
-            placeholder="Search mail..."
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            style={{
-              margin: "0 12px 8px",
-              padding: "6px 10px",
-              background: "#faf9f7",
-              border: "1px solid #e4e2dc",
-              borderRadius: 6,
-              fontFamily: "var(--font-mono), monospace",
-              fontSize: 11,
-              color: "#1a1916",
-              outline: "none",
-              flexShrink: 0,
-            }}
-          />
 
           <nav style={{ flex: 1, overflowY: "auto", padding: "4px 8px" }}>
             {(Object.entries(MAILBOX_META) as Array<

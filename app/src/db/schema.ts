@@ -41,3 +41,15 @@ export const emails = pgTable("emails", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const customEmailTemplates = pgTable("custom_email_templates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  ownerEmail: varchar("owner_email", { length: 255 }).notNull(),
+
+  label: varchar("label", { length: 255 }).notNull(),
+
+  prompt: text("prompt").notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
